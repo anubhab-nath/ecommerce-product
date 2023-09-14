@@ -1,26 +1,50 @@
 package dev.anubhav.product_catalog.controllers;
 
+import dev.anubhav.product_catalog.dtos.ProductDto;
+import dev.anubhav.product_catalog.services.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.List;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
+    private ProductService productService;
+
+    @Autowired
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping
-    public void getAllProducts() {
+    public List<ProductDto> getAllProducts(
+            @RequestParam(value = "limit", required = false) Integer limit,
+            @RequestParam(value = "sort", required = false) String sort
+    ) {
+        return productService.getAllProducts(limit, sort);
     }
 
     @GetMapping("/{id}")
-    public String getProductById(@PathVariable("id") Long id) {
-        return "product id: " + id;
+    public ProductDto getProductById(@PathVariable("id") Long id) {
+        return productService.getProductById(id);
     }
 
     @PostMapping
-    public String createProduct() {
-        return UUID.randomUUID().toString();
+    public ProductDto createProduct(
+            @RequestBody ProductDto productDto
+    ) {
+        return productService.createProduct(productDto);
+    }
+
+    @GetMapping("/categories")
+    public List<String> getAllCategories() {
+        return productService.getAllCategories();
+    }
+
+    @PutMapping("/{id}")
+    public ProductDto updateProduct(@PathVariable("id") Long id) {
+        return productService.updateProduct();
     }
 
 }

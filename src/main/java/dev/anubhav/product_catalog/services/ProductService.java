@@ -11,6 +11,5 @@ public interface ProductService {
     List<ProductDto> getAllProducts(Integer limit, String sort);
     ProductDto createProduct(ProductDto productDto);
     List<String> getAllCategories();
-
-    ProductDto updateProduct();
+    ProductDto updateProduct(ProductDto productDto, Long id);
 }

@@ -32,9 +32,9 @@ public class ProductController {
 
     @PostMapping
     public ProductDto createProduct(
-            @RequestBody ProductDto productDto
+            @RequestBody ProductDto requestDto
     ) {
-        return productService.createProduct(productDto);
+        return productService.createProduct(requestDto);
     }
 
     @GetMapping("/categories")
@@ -43,8 +43,11 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ProductDto updateProduct(@PathVariable("id") Long id) {
-        return productService.updateProduct();
+    public ProductDto updateProduct(
+            @PathVariable("id") Long id,
+            @RequestBody ProductDto requestDto
+    ) {
+        return productService.updateProduct(requestDto, id);
     }
 
 }

@@ -67,8 +67,13 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
-    public ProductDto updateProduct() {
-        return null;
+    public ProductDto updateProduct(ProductDto productDto, Long id) {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        String requestUrl = productRequestUrl + "/{id}";
+
+        HttpEntity<ProductDto> httpEntity = new HttpEntity<>(productDto);
+        ResponseEntity<FakeStoreProductDto> response = restTemplate.exchange(requestUrl, HttpMethod.PUT, httpEntity, FakeStoreProductDto.class, id);
+        return convertToProductDto(response.getBody());
     }
 
     private String setQueryParam(String requestUrl, Map<String, Object> params) {

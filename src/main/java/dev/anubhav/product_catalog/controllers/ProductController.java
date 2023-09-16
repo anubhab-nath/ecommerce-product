@@ -10,7 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/products")
 public class ProductController {
-    private ProductService productService;
+    private final ProductService productService;
 
     @Autowired
     public ProductController(ProductService productService) {
@@ -19,10 +19,11 @@ public class ProductController {
 
     @GetMapping
     public List<ProductDto> getAllProducts(
+            @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "limit", required = false) Integer limit,
             @RequestParam(value = "sort", required = false) String sort
     ) {
-        return productService.getAllProducts(limit, sort);
+        return productService.getAllProducts(category, limit, sort);
     }
 
     @GetMapping("/{id}")

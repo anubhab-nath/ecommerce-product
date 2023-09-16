@@ -33,14 +33,17 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
-    public List<ProductDto> getAllProducts(Integer limit, String sort) {
+    public List<ProductDto> getAllProducts(String category, Integer limit, String sort) {
         RestTemplate restTemplate = restTemplateBuilder.build();
+
+        // non-modular
+        String categoryUrl = category == null ? productRequestUrl : productRequestUrl + "/category/" + category;
 
         Map<String, Object> params = new HashMap<>();
         params.put("limit", limit);
         params.put("sort", sort);
 
-        String requestUrl = setQueryParam(productRequestUrl, params);
+        String requestUrl = setQueryParam(categoryUrl, params);
         ResponseEntity<FakeStoreProductDto[]> response = restTemplate.getForEntity(requestUrl, FakeStoreProductDto[].class);
 
         return Arrays.stream(Objects.requireNonNull(response.getBody()))
@@ -91,7 +94,7 @@ public class FakeStoreProductService implements ProductService {
             String key = param.getKey();
             Object value = param.getValue();
             if(value != null) {
-                // ?param=3&
+                // ?param=1&param=2
                 queryString.append(queryString.isEmpty() ? "?" : "&")
                         .append(key).append("=").append(value);
             }

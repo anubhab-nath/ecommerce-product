@@ -8,7 +8,7 @@ import java.util.List;
 @Service
 public interface ProductService {
     ProductDto getProductById(Long id);
-    List<ProductDto> getAllProducts(Integer limit, String sort);
+    List<ProductDto> getAllProducts(String category, Integer limit, String sort);
     ProductDto createProduct(ProductDto productDto);
     List<String> getAllCategories();
     ProductDto updateProduct(ProductDto productDto, Long id);

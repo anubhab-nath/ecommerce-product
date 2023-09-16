@@ -1,8 +1,13 @@
 package dev.anubhav.product_catalog.controllers;
 
+import dev.anubhav.product_catalog.dtos.ExceptionDto;
 import dev.anubhav.product_catalog.dtos.ProductDto;
+import dev.anubhav.product_catalog.exceptions.NotFoundException;
 import dev.anubhav.product_catalog.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +32,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ProductDto getProductById(@PathVariable("id") Long id) {
+    public ProductDto getProductById(@PathVariable("id") Long id) throws NotFoundException {
         return productService.getProductById(id);
     }
 
@@ -52,6 +57,13 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public ProductDto deleteProduct(@PathVariable("id") Long id) {
         return productService.deleteProduct(id);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    private ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
     }
 
 }

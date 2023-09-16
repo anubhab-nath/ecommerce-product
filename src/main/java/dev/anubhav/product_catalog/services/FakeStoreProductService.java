@@ -2,6 +2,7 @@ package dev.anubhav.product_catalog.services;
 
 import dev.anubhav.product_catalog.dtos.FakeStoreProductDto;
 import dev.anubhav.product_catalog.dtos.ProductDto;
+import dev.anubhav.product_catalog.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Primary;
@@ -24,12 +25,16 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
-    public ProductDto getProductById(Long id) {
+    public ProductDto getProductById(Long id) throws NotFoundException {
         RestTemplate restTemplate = restTemplateBuilder.build();
         String requestUrl = productRequestUrl + "/{id}";
 
         ResponseEntity<FakeStoreProductDto> response = restTemplate.getForEntity(requestUrl, FakeStoreProductDto.class, id);
-        return convertToProductDto(response.getBody());
+
+        FakeStoreProductDto fakeStoreProductDto = response.getBody();
+        if(fakeStoreProductDto == null)
+            throw new NotFoundException("Product with id: " + id + "not found");
+        return convertToProductDto(fakeStoreProductDto);
     }
 
     @Override

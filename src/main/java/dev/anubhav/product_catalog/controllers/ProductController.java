@@ -59,11 +59,4 @@ public class ProductController {
         return productService.deleteProduct(id);
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    private ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
-    }
-
 }

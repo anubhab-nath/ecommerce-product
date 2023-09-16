@@ -1,5 +1,6 @@
 package dev.anubhav.product_catalog.services;
 
+import dev.anubhav.product_catalog.dtos.ExceptionDto;
 import dev.anubhav.product_catalog.dtos.FakeStoreProductDto;
 import dev.anubhav.product_catalog.dtos.ProductDto;
 import dev.anubhav.product_catalog.exceptions.NotFoundException;

@@ -4,6 +4,7 @@ import dev.anubhav.product_catalog.dtos.FakeStoreProductDto;
 import dev.anubhav.product_catalog.dtos.ProductDto;
 import dev.anubhav.product_catalog.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpEntity;
@@ -18,11 +19,16 @@ import java.util.*;
 @Component("fakeStoreProductClient")
 public class FakeStoreProductClient implements ThirdPartyClient {
     private final RestTemplateBuilder restTemplateBuilder;
-    private final String productRequestUrl = "https://fakestoreapi.com/products";
+    private final String productRequestUrl;
 
     @Autowired
-    public FakeStoreProductClient(RestTemplateBuilder restTemplateBuilder) {
+    public FakeStoreProductClient(
+            RestTemplateBuilder restTemplateBuilder,
+            @Value("${fakeStore.api.url}") String fakeStoreApiUrl,
+            @Value("${fakeStore.api.path.products}") String fakeStoreProductPath
+    ) {
         this.restTemplateBuilder = restTemplateBuilder;
+        this.productRequestUrl = fakeStoreApiUrl + fakeStoreProductPath;
     }
 
     @Override

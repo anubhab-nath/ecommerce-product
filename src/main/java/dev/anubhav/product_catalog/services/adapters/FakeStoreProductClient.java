@@ -1,27 +1,27 @@
-package dev.anubhav.product_catalog.services;
+package dev.anubhav.product_catalog.services.adapters;
 
-import dev.anubhav.product_catalog.dtos.ExceptionDto;
 import dev.anubhav.product_catalog.dtos.FakeStoreProductDto;
 import dev.anubhav.product_catalog.dtos.ProductDto;
 import dev.anubhav.product_catalog.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
 @Primary
-@Component("fakeStoreProductService")
-public class FakeStoreProductService implements ProductService {
-
+@Component("fakeStoreProductClient")
+public class FakeStoreProductClient implements ThirdPartyClient {
     private final RestTemplateBuilder restTemplateBuilder;
     private final String productRequestUrl = "https://fakestoreapi.com/products";
 
     @Autowired
-    public FakeStoreProductService(RestTemplateBuilder restTemplateBuilder) {
+    public FakeStoreProductClient(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplateBuilder = restTemplateBuilder;
     }
 
@@ -34,7 +34,7 @@ public class FakeStoreProductService implements ProductService {
 
         FakeStoreProductDto fakeStoreProductDto = response.getBody();
         if(fakeStoreProductDto == null)
-            throw new NotFoundException("Product with id: " + id + "not found");
+            throw new NotFoundException("Product with id: " + id + " not found");
         return convertToProductDto(fakeStoreProductDto);
     }
 

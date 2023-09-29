@@ -2,6 +2,7 @@ package dev.anubhav.product_catalog.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,9 @@ import lombok.ToString;
 public class Product extends BaseModel {
     private String title;
     private String description;
-    private double price;
+
+    @OneToOne
+    private Price cost;
 
     @ManyToOne
     private Category category;

@@ -21,7 +21,7 @@ public class ThirdPartyProductService implements ProductService {
     }
 
     @Override
-    public ProductDto getProductById(Long id) throws NotFoundException {
+    public ProductDto getProductById(String id) throws NotFoundException {
         return thirdPartyClient.getProductById(id);
     }
 
@@ -41,12 +41,12 @@ public class ThirdPartyProductService implements ProductService {
     }
 
     @Override
-    public ProductDto updateProduct(ProductDto productDto, Long id) {
+    public ProductDto updateProduct(ProductDto productDto, String id) {
         return thirdPartyClient.updateProduct(productDto, id);
     }
 
     @Override
-    public ProductDto deleteProduct(Long id) {
+    public ProductDto deleteProduct(String id) {
         return thirdPartyClient.deleteProduct(id);
     }
 }

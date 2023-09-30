@@ -6,7 +6,7 @@ import dev.anubhav.product_catalog.exceptions.NotFoundException;
 import java.util.List;
 
 public interface ThirdPartyClient {
-    ProductDto getProductById(Long id) throws NotFoundException;
+    ProductDto getProductById(String id) throws NotFoundException;
 
     List<ProductDto> getAllProducts(String category, Integer limit, String sort);
 
@@ -14,7 +14,7 @@ public interface ThirdPartyClient {
 
     List<String> getAllCategories();
 
-    ProductDto updateProduct(ProductDto productDto, Long id);
+    ProductDto updateProduct(ProductDto productDto, String id);
 
-    ProductDto deleteProduct(Long id);
+    ProductDto deleteProduct(String id);
 }

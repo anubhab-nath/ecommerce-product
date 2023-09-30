@@ -32,7 +32,7 @@ public class FakeStoreProductClient implements ThirdPartyClient {
     }
 
     @Override
-    public ProductDto getProductById(Long id) throws NotFoundException {
+    public ProductDto getProductById(String id) throws NotFoundException {
         RestTemplate restTemplate = restTemplateBuilder.build();
         String requestUrl = productRequestUrl + "/{id}";
 
@@ -82,7 +82,7 @@ public class FakeStoreProductClient implements ThirdPartyClient {
     }
 
     @Override
-    public ProductDto updateProduct(ProductDto productDto, Long id) {
+    public ProductDto updateProduct(ProductDto productDto, String id) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         String requestUrl = productRequestUrl + "/{id}";
 
@@ -92,7 +92,7 @@ public class FakeStoreProductClient implements ThirdPartyClient {
     }
 
     @Override
-    public ProductDto deleteProduct(Long id) {
+    public ProductDto deleteProduct(String id) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         String requestUrl = productRequestUrl + "/{id}";
 

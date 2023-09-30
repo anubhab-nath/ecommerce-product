@@ -30,7 +30,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long id) throws NotFoundException {
+    public ResponseEntity<ProductDto> getProductById(@PathVariable("id") String id) throws NotFoundException {
         return ResponseEntity
                 .ok(productService.getProductById(id));
     }
@@ -48,7 +48,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(
-            @PathVariable("id") Long id,
+            @PathVariable("id") String id,
             @RequestBody ProductDto requestDto
     ) {
         return ResponseEntity
@@ -56,7 +56,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ProductDto> deleteProduct(@PathVariable("id") Long id) {
+    public ResponseEntity<ProductDto> deleteProduct(@PathVariable("id") String id) {
         return ResponseEntity.ok(productService.deleteProduct(id));
     }
 

@@ -2,31 +2,117 @@ package dev.anubhav.product_catalog.services;
 
 import dev.anubhav.product_catalog.dtos.ProductDto;
 import dev.anubhav.product_catalog.exceptions.NotFoundException;
+import dev.anubhav.product_catalog.models.Category;
+import dev.anubhav.product_catalog.models.Price;
+import dev.anubhav.product_catalog.models.Product;
+import dev.anubhav.product_catalog.repos.CategoryRepository;
+import dev.anubhav.product_catalog.repos.PriceRepository;
+import dev.anubhav.product_catalog.repos.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+@Primary
 @Component("ProductService")
 public class SelfProductService implements ProductService {
 
+    private final ProductRepository productRepository;
+    private final PriceRepository priceRepository;
+    private final CategoryRepository categoryRepository;
+
+    @Autowired
+    public SelfProductService(
+            ProductRepository productRepository,
+            PriceRepository priceRepository,
+            CategoryRepository categoryRepository
+    ) {
+        this.productRepository = productRepository;
+        this.priceRepository = priceRepository;
+        this.categoryRepository = categoryRepository;
+    }
+
     @Override
     public ProductDto getProductById(String id) throws NotFoundException {
-        return null;
+        UUID uuid = UUID.fromString(id);
+        Product product  = productRepository.findById(uuid)
+                .orElseThrow(() -> new NotFoundException("Product with id: " + id + " not found"));
+
+        return ProductDto.builder()
+                .id(product.getId().toString())
+                .title(product.getTitle())
+                .category(product.getCategory().getName())
+                .currency(product.getCost().getCurrency())
+                .price(product.getCost().getAmount())
+                .description(product.getDescription())
+                .build();
     }
 
+    // todo: based on category with limit and order
     @Override
     public List<ProductDto> getAllProducts(String category, Integer limit, String sort) {
-        return null;
+        List<Product> products = productRepository.findAll();
+
+        List<ProductDto> productDtoList = new ArrayList<>();
+        for(Product product: products) {
+            productDtoList.add(
+                    ProductDto.builder()
+                            .id(product.getId().toString())
+                            .title(product.getTitle())
+                            .category(product.getCategory().getName())
+                            .currency(product.getCost().getCurrency())
+                            .price(product.getCost().getAmount())
+                            .description(product.getDescription())
+                            .build()
+            );
+        }
+
+        return productDtoList;
     }
 
     @Override
-    public ProductDto createProduct(ProductDto productDto) {
-        return null;
+    public ProductDto createProduct(ProductDto requestDto) {
+        Product product = new Product();
+        product.setTitle(requestDto.getTitle());
+        product.setDescription(requestDto.getDescription());
+
+        Price price = new Price(requestDto.getCurrency(), requestDto.getPrice());
+        Price savedPrice = priceRepository.save(price);
+        product.setCost(savedPrice);
+
+        Category savedCategory = getCategory(requestDto.getCategory());
+        product.setCategory(savedCategory);
+
+        Product savedProduct = productRepository.save(product);
+        return ProductDto.builder()
+                .id(savedProduct.getId().toString())
+                .category(savedProduct.getCategory().getName())
+                .title(savedProduct.getTitle())
+                .description(savedProduct.getDescription())
+                .currency(savedProduct.getCost().getCurrency())
+                .price(savedProduct.getCost().getAmount())
+                .build();
+    }
+
+    private Category getCategory(String category) {
+        Optional<Category> storedCategory = categoryRepository.findByName(category);
+        if(storedCategory.isEmpty()) {
+            Category newCategory = new Category(category);
+            return categoryRepository.save(newCategory);
+        }
+        return storedCategory.get();
+
     }
 
     @Override
     public List<String> getAllCategories() {
-        return null;
+        return categoryRepository.findAll().stream()
+                .map(Category::getName)
+                .toList();
     }
 
     @Override

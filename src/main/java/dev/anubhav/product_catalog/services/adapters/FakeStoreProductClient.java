@@ -117,7 +117,7 @@ public class FakeStoreProductClient implements ThirdPartyClient {
 
     private ProductDto convertToProductDto(FakeStoreProductDto fakeStoreProductDto) {
         return ProductDto.builder()
-                .id(Objects.requireNonNull(fakeStoreProductDto).getId())
+                .id(Objects.requireNonNull(fakeStoreProductDto).getId().toString())
                 .title(fakeStoreProductDto.getTitle())
                 .price(fakeStoreProductDto.getPrice())
                 .description(fakeStoreProductDto.getDescription())

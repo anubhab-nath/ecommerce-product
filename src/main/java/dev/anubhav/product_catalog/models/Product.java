@@ -13,8 +13,8 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @ToString
+@Entity(name = "products")
 public class Product extends BaseModel {
     private String title;
     private String description;

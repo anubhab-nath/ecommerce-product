@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Primary
-@Component("ProductService")
+@Component("selfProductService")
 public class SelfProductService implements ProductService {
 
     private final ProductRepository productRepository;
@@ -54,8 +54,14 @@ public class SelfProductService implements ProductService {
 
     // todo: based on category with limit and order
     @Override
-    public List<ProductDto> getAllProducts(String category, Integer limit, String sort) {
-        List<Product> products = productRepository.findAll();
+    public List<ProductDto> getAllProducts(String category, Integer limit, String sort) throws NotFoundException {
+        List<Product> products;
+        if(category != null) {
+            Category storedCategory = categoryRepository.findByName(category)
+                    .orElseThrow(() -> new NotFoundException("Category with name '" + category + "' is not found."));
+            products = productRepository.findByCategory(storedCategory.getId());
+        }
+        else products = productRepository.findAll();
 
         List<ProductDto> productDtoList = new ArrayList<>();
         for(Product product: products) {
@@ -116,12 +122,41 @@ public class SelfProductService implements ProductService {
     }
 
     @Override
-    public ProductDto updateProduct(ProductDto productDto, String id) {
-        return null;
+    public ProductDto updateProduct(ProductDto requestDto, String id) {
+        UUID uuid = UUID.fromString(id);
+        Product product = productRepository.getReferenceById(uuid);
+        product.setTitle(requestDto.getTitle());
+        product.setDescription(requestDto.getDescription());
+
+        Price price = product.getCost();
+        price.setCurrency(requestDto.getCurrency());
+        price.setAmount(requestDto.getPrice());
+        Price savedPrice = priceRepository.save(price);
+        product.setCost(savedPrice);
+
+        Category category = product.getCategory();
+        category.setName(category.getName());
+        Category savedCategory = categoryRepository.save(category);
+        product.setCategory(savedCategory);
+
+        Product savedProduct = productRepository.save(product);
+        return ProductDto.builder()
+                .id(savedProduct.getId().toString())
+                .category(savedProduct.getCategory().getName())
+                .title(savedProduct.getTitle())
+                .description(savedProduct.getDescription())
+                .currency(savedProduct.getCost().getCurrency())
+                .price(savedProduct.getCost().getAmount())
+                .build();
     }
 
     @Override
-    public ProductDto deleteProduct(String id) {
-        return null;
+    public ProductDto deleteProduct(String id) throws NotFoundException {
+        UUID uuid = UUID.fromString(id);
+        productRepository.deleteById(uuid);
+        Product product  = productRepository.findById(uuid)
+                .orElseThrow(() -> new NotFoundException("Product with id: " + id + " not found"));
+        productRepository.delete(product);
+        return ProductDto.builder().build();
     }
 }

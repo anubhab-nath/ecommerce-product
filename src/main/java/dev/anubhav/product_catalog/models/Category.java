@@ -5,14 +5,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Entity
+@Entity(name = "categories")
 public class Category extends BaseModel {
     private String name;
 

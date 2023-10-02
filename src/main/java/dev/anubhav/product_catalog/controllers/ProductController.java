@@ -4,6 +4,7 @@ import dev.anubhav.product_catalog.dtos.ProductDto;
 import dev.anubhav.product_catalog.exceptions.NotFoundException;
 import dev.anubhav.product_catalog.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class ProductController {
             @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "limit", required = false) Integer limit,
             @RequestParam(value = "sort", required = false) String sort
-    ) {
+    ) throws NotFoundException {
         return ResponseEntity
                 .ok(productService.getAllProducts(category, limit, sort));
     }
@@ -38,7 +39,8 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto requestDto) {
         return ResponseEntity
-                .ok(productService.createProduct(requestDto));
+                .status(HttpStatus.CREATED)
+                .body(productService.createProduct(requestDto));
     }
 
     @GetMapping("/categories")
@@ -56,8 +58,10 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ProductDto> deleteProduct(@PathVariable("id") String id) {
-        return ResponseEntity.ok(productService.deleteProduct(id));
+    public ResponseEntity<ProductDto> deleteProduct(@PathVariable("id") String id) throws NotFoundException {
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(productService.deleteProduct(id));
     }
 
 }

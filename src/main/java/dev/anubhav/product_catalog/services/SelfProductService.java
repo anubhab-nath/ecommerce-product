@@ -1,5 +1,6 @@
 package dev.anubhav.product_catalog.services;
 
+import dev.anubhav.product_catalog.dtos.PriceDto;
 import dev.anubhav.product_catalog.dtos.ProductDto;
 import dev.anubhav.product_catalog.exceptions.NotFoundException;
 import dev.anubhav.product_catalog.models.Category;
@@ -42,12 +43,16 @@ public class SelfProductService implements ProductService {
         Product product  = productRepository.findById(uuid)
                 .orElseThrow(() -> new NotFoundException("Product with id: " + id + " not found"));
 
+        Price cost = product.getCost();
+
         return ProductDto.builder()
                 .id(product.getId().toString())
                 .title(product.getTitle())
                 .category(product.getCategory().getName())
-                .currency(product.getCost().getCurrency())
-                .price(product.getCost().getAmount())
+                .cost(PriceDto.builder()
+                        .currency(cost.getCurrency())
+                        .amount(cost.getAmount()).build()
+                )
                 .description(product.getDescription())
                 .build();
     }
@@ -65,13 +70,16 @@ public class SelfProductService implements ProductService {
 
         List<ProductDto> productDtoList = new ArrayList<>();
         for(Product product: products) {
+            Price cost = product.getCost();
             productDtoList.add(
                     ProductDto.builder()
                             .id(product.getId().toString())
                             .title(product.getTitle())
                             .category(product.getCategory().getName())
-                            .currency(product.getCost().getCurrency())
-                            .price(product.getCost().getAmount())
+                            .cost(PriceDto.builder()
+                                    .currency(cost.getCurrency())
+                                    .amount(cost.getAmount()).build()
+                            )
                             .description(product.getDescription())
                             .build()
             );
@@ -86,7 +94,8 @@ public class SelfProductService implements ProductService {
         product.setTitle(requestDto.getTitle());
         product.setDescription(requestDto.getDescription());
 
-        Price price = new Price(requestDto.getCurrency(), requestDto.getPrice());
+        PriceDto priceDto = requestDto.getCost();
+        Price price = new Price(priceDto.getCurrency(), priceDto.getAmount());
         Price savedPrice = priceRepository.save(price);
         product.setCost(savedPrice);
 
@@ -94,13 +103,17 @@ public class SelfProductService implements ProductService {
         product.setCategory(savedCategory);
 
         Product savedProduct = productRepository.save(product);
+        Price savedCost = savedProduct.getCost();
+
         return ProductDto.builder()
                 .id(savedProduct.getId().toString())
                 .category(savedProduct.getCategory().getName())
                 .title(savedProduct.getTitle())
                 .description(savedProduct.getDescription())
-                .currency(savedProduct.getCost().getCurrency())
-                .price(savedProduct.getCost().getAmount())
+                .cost(PriceDto.builder()
+                        .currency(savedCost.getCurrency())
+                        .amount(savedCost.getAmount()).build()
+                )
                 .build();
     }
 
@@ -128,9 +141,10 @@ public class SelfProductService implements ProductService {
         product.setTitle(requestDto.getTitle());
         product.setDescription(requestDto.getDescription());
 
+        PriceDto cost = requestDto.getCost();
         Price price = product.getCost();
-        price.setCurrency(requestDto.getCurrency());
-        price.setAmount(requestDto.getPrice());
+        price.setCurrency(cost.getCurrency());
+        price.setAmount(cost.getAmount());
         Price savedPrice = priceRepository.save(price);
         product.setCost(savedPrice);
 
@@ -140,20 +154,22 @@ public class SelfProductService implements ProductService {
         product.setCategory(savedCategory);
 
         Product savedProduct = productRepository.save(product);
+        Price savedCost = savedProduct.getCost();
         return ProductDto.builder()
                 .id(savedProduct.getId().toString())
                 .category(savedProduct.getCategory().getName())
                 .title(savedProduct.getTitle())
                 .description(savedProduct.getDescription())
-                .currency(savedProduct.getCost().getCurrency())
-                .price(savedProduct.getCost().getAmount())
+                .cost(PriceDto.builder()
+                        .currency(savedCost.getCurrency())
+                        .amount(savedCost.getAmount()).build()
+                )
                 .build();
     }
 
     @Override
     public ProductDto deleteProduct(String id) throws NotFoundException {
         UUID uuid = UUID.fromString(id);
-        productRepository.deleteById(uuid);
         Product product  = productRepository.findById(uuid)
                 .orElseThrow(() -> new NotFoundException("Product with id: " + id + " not found"));
         productRepository.delete(product);

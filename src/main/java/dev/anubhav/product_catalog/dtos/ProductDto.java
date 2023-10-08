@@ -8,8 +8,7 @@ import lombok.Getter;
 public class ProductDto {
     private String id;
     private String title;
-    private String currency;
-    private double price;
+    private PriceDto cost;
     private String category;
     private String description;
     private String image;

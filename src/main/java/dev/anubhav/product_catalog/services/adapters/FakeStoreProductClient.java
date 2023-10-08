@@ -1,6 +1,7 @@
 package dev.anubhav.product_catalog.services.adapters;
 
 import dev.anubhav.product_catalog.dtos.FakeStoreProductDto;
+import dev.anubhav.product_catalog.dtos.PriceDto;
 import dev.anubhav.product_catalog.dtos.ProductDto;
 import dev.anubhav.product_catalog.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,7 +120,11 @@ public class FakeStoreProductClient implements ThirdPartyClient {
         return ProductDto.builder()
                 .id(Objects.requireNonNull(fakeStoreProductDto).getId().toString())
                 .title(fakeStoreProductDto.getTitle())
-                .price(fakeStoreProductDto.getPrice())
+                .cost(PriceDto.builder()
+                        .currency("INR")
+                        .amount(fakeStoreProductDto.getPrice())
+                        .build()
+                )
                 .description(fakeStoreProductDto.getDescription())
                 .category(fakeStoreProductDto.getCategory())
                 .image(fakeStoreProductDto.getImage())

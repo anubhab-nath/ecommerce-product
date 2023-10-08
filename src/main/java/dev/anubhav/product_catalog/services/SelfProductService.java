@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,18 +42,7 @@ public class SelfProductService implements ProductService {
         Product product  = productRepository.findById(uuid)
                 .orElseThrow(() -> new NotFoundException("Product with id: " + id + " not found"));
 
-        Price cost = product.getCost();
-
-        return ProductDto.builder()
-                .id(product.getId().toString())
-                .title(product.getTitle())
-                .category(product.getCategory().getName())
-                .cost(PriceDto.builder()
-                        .currency(cost.getCurrency())
-                        .amount(cost.getAmount()).build()
-                )
-                .description(product.getDescription())
-                .build();
+        return convertToProductDto(product);
     }
 
     // todo: based on category with limit and order
@@ -68,24 +56,9 @@ public class SelfProductService implements ProductService {
         }
         else products = productRepository.findAll();
 
-        List<ProductDto> productDtoList = new ArrayList<>();
-        for(Product product: products) {
-            Price cost = product.getCost();
-            productDtoList.add(
-                    ProductDto.builder()
-                            .id(product.getId().toString())
-                            .title(product.getTitle())
-                            .category(product.getCategory().getName())
-                            .cost(PriceDto.builder()
-                                    .currency(cost.getCurrency())
-                                    .amount(cost.getAmount()).build()
-                            )
-                            .description(product.getDescription())
-                            .build()
-            );
-        }
-
-        return productDtoList;
+        return products.stream()
+                .map(this::convertToProductDto)
+                .toList();
     }
 
     @Override
@@ -97,24 +70,14 @@ public class SelfProductService implements ProductService {
         PriceDto priceDto = requestDto.getCost();
         Price price = new Price(priceDto.getCurrency(), priceDto.getAmount());
         Price savedPrice = priceRepository.save(price);
-        product.setCost(savedPrice);
+        product.setPrice(savedPrice);
 
         Category savedCategory = getCategory(requestDto.getCategory());
         product.setCategory(savedCategory);
 
         Product savedProduct = productRepository.save(product);
-        Price savedCost = savedProduct.getCost();
 
-        return ProductDto.builder()
-                .id(savedProduct.getId().toString())
-                .category(savedProduct.getCategory().getName())
-                .title(savedProduct.getTitle())
-                .description(savedProduct.getDescription())
-                .cost(PriceDto.builder()
-                        .currency(savedCost.getCurrency())
-                        .amount(savedCost.getAmount()).build()
-                )
-                .build();
+        return convertToProductDto(savedProduct);
     }
 
     private Category getCategory(String category) {
@@ -142,11 +105,11 @@ public class SelfProductService implements ProductService {
         product.setDescription(requestDto.getDescription());
 
         PriceDto cost = requestDto.getCost();
-        Price price = product.getCost();
+        Price price = product.getPrice();
         price.setCurrency(cost.getCurrency());
         price.setAmount(cost.getAmount());
         Price savedPrice = priceRepository.save(price);
-        product.setCost(savedPrice);
+        product.setPrice(savedPrice);
 
         Category category = product.getCategory();
         category.setName(category.getName());
@@ -154,17 +117,7 @@ public class SelfProductService implements ProductService {
         product.setCategory(savedCategory);
 
         Product savedProduct = productRepository.save(product);
-        Price savedCost = savedProduct.getCost();
-        return ProductDto.builder()
-                .id(savedProduct.getId().toString())
-                .category(savedProduct.getCategory().getName())
-                .title(savedProduct.getTitle())
-                .description(savedProduct.getDescription())
-                .cost(PriceDto.builder()
-                        .currency(savedCost.getCurrency())
-                        .amount(savedCost.getAmount()).build()
-                )
-                .build();
+        return convertToProductDto(savedProduct);
     }
 
     @Override
@@ -174,5 +127,19 @@ public class SelfProductService implements ProductService {
                 .orElseThrow(() -> new NotFoundException("Product with id: " + id + " not found"));
         productRepository.delete(product);
         return ProductDto.builder().build();
+    }
+
+    private ProductDto convertToProductDto(Product product) {
+        Price price = product.getPrice();
+        return ProductDto.builder()
+                .id(product.getId().toString())
+                .title(product.getTitle())
+                .category(product.getCategory().getName())
+                .cost(PriceDto.builder()
+                        .currency(price.getCurrency())
+                        .amount(price.getAmount()).build()
+                )
+                .description(product.getDescription())
+                .build();
     }
 }

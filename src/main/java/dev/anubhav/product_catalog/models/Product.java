@@ -20,7 +20,7 @@ public class Product extends BaseModel {
     private String description;
 
     @OneToOne
-    private Price cost;
+    private Price price;
 
     @ManyToOne
     private Category category;

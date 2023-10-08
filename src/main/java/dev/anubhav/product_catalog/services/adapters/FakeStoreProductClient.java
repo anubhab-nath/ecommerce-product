@@ -120,7 +120,7 @@ public class FakeStoreProductClient implements ThirdPartyClient {
         return ProductDto.builder()
                 .id(Objects.requireNonNull(fakeStoreProductDto).getId().toString())
                 .title(fakeStoreProductDto.getTitle())
-                .cost(PriceDto.builder()
+                .price(PriceDto.builder()
                         .currency("INR")
                         .amount(fakeStoreProductDto.getPrice())
                         .build()

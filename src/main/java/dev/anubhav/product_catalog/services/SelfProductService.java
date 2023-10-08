@@ -45,7 +45,10 @@ public class SelfProductService implements ProductService {
         return convertToProductDto(product);
     }
 
-    // todo: based on category with limit and order
+    /* todo:
+        - based on category with limit and order
+        - return only titles if param 'onlyTitles' is true
+    * */
     @Override
     public List<ProductDto> getAllProducts(String category, Integer limit, String sort) throws NotFoundException {
         List<Product> products;
@@ -67,7 +70,7 @@ public class SelfProductService implements ProductService {
         product.setTitle(requestDto.getTitle());
         product.setDescription(requestDto.getDescription());
 
-        PriceDto priceDto = requestDto.getCost();
+        PriceDto priceDto = requestDto.getPrice();
         Price price = new Price(priceDto.getCurrency(), priceDto.getAmount());
         Price savedPrice = priceRepository.save(price);
         product.setPrice(savedPrice);
@@ -104,7 +107,7 @@ public class SelfProductService implements ProductService {
         product.setTitle(requestDto.getTitle());
         product.setDescription(requestDto.getDescription());
 
-        PriceDto cost = requestDto.getCost();
+        PriceDto cost = requestDto.getPrice();
         Price price = product.getPrice();
         price.setCurrency(cost.getCurrency());
         price.setAmount(cost.getAmount());
@@ -135,7 +138,7 @@ public class SelfProductService implements ProductService {
                 .id(product.getId().toString())
                 .title(product.getTitle())
                 .category(product.getCategory().getName())
-                .cost(PriceDto.builder()
+                .price(PriceDto.builder()
                         .currency(price.getCurrency())
                         .amount(price.getAmount()).build()
                 )

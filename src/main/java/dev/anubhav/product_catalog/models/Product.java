@@ -18,6 +18,7 @@ import lombok.ToString;
 public class Product extends BaseModel {
     private String title;
     private String description;
+    private String image;
 
     @OneToOne
     private Price price;

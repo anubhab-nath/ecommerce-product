@@ -69,6 +69,7 @@ public class SelfProductService implements ProductService {
         Product product = new Product();
         product.setTitle(requestDto.getTitle());
         product.setDescription(requestDto.getDescription());
+        product.setImage(requestDto.getImage());
 
         PriceDto priceDto = requestDto.getPrice();
         Price price = new Price(priceDto.getCurrency(), priceDto.getAmount());
@@ -106,6 +107,7 @@ public class SelfProductService implements ProductService {
         Product product = productRepository.getReferenceById(uuid);
         product.setTitle(requestDto.getTitle());
         product.setDescription(requestDto.getDescription());
+        product.setImage(requestDto.getImage());
 
         PriceDto cost = requestDto.getPrice();
         Price price = product.getPrice();
@@ -138,6 +140,7 @@ public class SelfProductService implements ProductService {
                 .id(product.getId().toString())
                 .title(product.getTitle())
                 .category(product.getCategory().getName())
+                .image(product.getImage())
                 .price(PriceDto.builder()
                         .currency(price.getCurrency())
                         .amount(price.getAmount()).build()

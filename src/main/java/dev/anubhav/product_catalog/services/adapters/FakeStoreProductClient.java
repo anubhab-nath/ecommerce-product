@@ -1,7 +1,6 @@
 package dev.anubhav.product_catalog.services.adapters;
 
 import dev.anubhav.product_catalog.dtos.FakeStoreProductDto;
-import dev.anubhav.product_catalog.dtos.PriceDto;
 import dev.anubhav.product_catalog.dtos.ProductDto;
 import dev.anubhav.product_catalog.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,7 @@ public class FakeStoreProductClient implements ThirdPartyClient {
         FakeStoreProductDto fakeStoreProductDto = response.getBody();
         if(fakeStoreProductDto == null)
             throw new NotFoundException("Product with id: " + id + " not found");
-        return convertToProductDto(fakeStoreProductDto);
+        return ProductDto.from(fakeStoreProductDto);
     }
 
     @Override
@@ -60,7 +59,7 @@ public class FakeStoreProductClient implements ThirdPartyClient {
         ResponseEntity<FakeStoreProductDto[]> response = restTemplate.getForEntity(requestUrl, FakeStoreProductDto[].class);
 
         return Arrays.stream(Objects.requireNonNull(response.getBody()))
-                .map(this::convertToProductDto)
+                .map(ProductDto::from)
                 .toList();
     }
 
@@ -69,7 +68,7 @@ public class FakeStoreProductClient implements ThirdPartyClient {
         RestTemplate restTemplate = restTemplateBuilder.build();
 
         ResponseEntity<FakeStoreProductDto> response = restTemplate.postForEntity(productRequestUrl, productDto, FakeStoreProductDto.class);
-        return convertToProductDto(response.getBody());
+        return ProductDto.from(response.getBody());
     }
 
     @Override
@@ -89,7 +88,7 @@ public class FakeStoreProductClient implements ThirdPartyClient {
 
         HttpEntity<ProductDto> httpEntity = new HttpEntity<>(productDto);
         ResponseEntity<FakeStoreProductDto> response = restTemplate.exchange(requestUrl, HttpMethod.PUT, httpEntity, FakeStoreProductDto.class, id);
-        return convertToProductDto(response.getBody());
+        return ProductDto.from(response.getBody());
     }
 
     @Override
@@ -98,7 +97,7 @@ public class FakeStoreProductClient implements ThirdPartyClient {
         String requestUrl = productRequestUrl + "/{id}";
 
         ResponseEntity<FakeStoreProductDto> response = restTemplate.exchange(requestUrl, HttpMethod.DELETE, HttpEntity.EMPTY, FakeStoreProductDto.class, id);
-        return convertToProductDto(response.getBody());
+        return ProductDto.from(response.getBody());
     }
 
     private String setQueryParam(String requestUrl, Map<String, Object> params) {
@@ -114,20 +113,5 @@ public class FakeStoreProductClient implements ThirdPartyClient {
         }
 
         return requestUrl + queryString;
-    }
-
-    private ProductDto convertToProductDto(FakeStoreProductDto fakeStoreProductDto) {
-        return ProductDto.builder()
-                .id(Objects.requireNonNull(fakeStoreProductDto).getId().toString())
-                .title(fakeStoreProductDto.getTitle())
-                .price(PriceDto.builder()
-                        .currency("INR")
-                        .amount(fakeStoreProductDto.getPrice())
-                        .build()
-                )
-                .description(fakeStoreProductDto.getDescription())
-                .category(fakeStoreProductDto.getCategory())
-                .image(fakeStoreProductDto.getImage())
-                .build();
     }
 }

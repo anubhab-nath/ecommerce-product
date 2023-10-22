@@ -1,14 +1,16 @@
 package dev.anubhav.product_catalog.dtos;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class ExceptionDto {
     private String message;
+
+    public static ExceptionDto body(String message) {
+        ExceptionDto exceptionDto = new ExceptionDto();
+        exceptionDto.setMessage(message);
+        return exceptionDto;
+    }
 }

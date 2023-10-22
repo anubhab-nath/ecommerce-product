@@ -13,6 +13,6 @@ public class ExceptionController {
     private ResponseEntity<ExceptionDto> handleNotFoundException(NotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new ExceptionDto(ex.getMessage()));
+                .body(ExceptionDto.body(ex.getMessage()));
     }
 }

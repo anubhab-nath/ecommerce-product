@@ -42,7 +42,7 @@ public class SelfProductService implements ProductService {
         Product product  = productRepository.findById(uuid)
                 .orElseThrow(() -> new NotFoundException("Product with id: " + id + " not found"));
 
-        return convertToProductDto(product);
+        return ProductDto.from(product);
     }
 
     /* todo:
@@ -60,7 +60,7 @@ public class SelfProductService implements ProductService {
         else products = productRepository.findAll();
 
         return products.stream()
-                .map(this::convertToProductDto)
+                .map(ProductDto::from)
                 .toList();
     }
 
@@ -81,7 +81,7 @@ public class SelfProductService implements ProductService {
 
         Product savedProduct = productRepository.save(product);
 
-        return convertToProductDto(savedProduct);
+        return ProductDto.from(savedProduct);
     }
 
     private Category getCategory(String category) {
@@ -122,7 +122,7 @@ public class SelfProductService implements ProductService {
         product.setCategory(savedCategory);
 
         Product savedProduct = productRepository.save(product);
-        return convertToProductDto(savedProduct);
+        return ProductDto.from(savedProduct);
     }
 
     @Override
@@ -132,20 +132,5 @@ public class SelfProductService implements ProductService {
                 .orElseThrow(() -> new NotFoundException("Product with id: " + id + " not found"));
         productRepository.delete(product);
         return ProductDto.builder().build();
-    }
-
-    private ProductDto convertToProductDto(Product product) {
-        Price price = product.getPrice();
-        return ProductDto.builder()
-                .id(product.getId().toString())
-                .title(product.getTitle())
-                .category(product.getCategory().getName())
-                .image(product.getImage())
-                .price(PriceDto.builder()
-                        .currency(price.getCurrency())
-                        .amount(price.getAmount()).build()
-                )
-                .description(product.getDescription())
-                .build();
     }
 }
